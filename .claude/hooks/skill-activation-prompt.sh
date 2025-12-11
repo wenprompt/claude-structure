@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================================
-# SKILL ACTIVATION PROMPT HOOK (v2.0)
+# SKILL ACTIVATION PROMPT HOOK (v2.1)
 # ============================================================================
 # Trigger: Runs on every user prompt submission
 # Purpose: Suggests relevant skills based on keywords AND intent patterns
@@ -77,18 +77,16 @@ for SKILL_NAME in $SKILL_NAMES; do
   done
   
   # Extract and match intent patterns
-  INTENTS=$(echo "$SKILL_BLOCK" | sed -n 's/.*"intentPatterns"[^[]*\[\([^]]*\)\].*/\1/p' | tr ',' '\n' | tr -d '"' | grep -v '^$')
-  
-  for PATTERN in $INTENTS; do
-    # Clean up pattern whitespace
+  # v2.1 FIX: Use while read loop instead of for loop to preserve patterns with spaces
+  MATCHED_INTENTS=$(echo "$SKILL_BLOCK" | sed -n 's/.*"intentPatterns"[^[]*\[\([^]]*\)\].*/\1/p' | tr ',' '\n' | tr -d '"' | grep -v '^$' | while IFS= read -r PATTERN; do
     PATTERN=$(echo "$PATTERN" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')
     [ -z "$PATTERN" ] && continue
-    
-    # Try to match using grep -E (extended regex)
+
     if echo "$PROMPT_LOWER" | grep -Eq "$PATTERN" 2>/dev/null; then
-      [ -z "$MATCHED_INTENTS" ] && MATCHED_INTENTS="intent" || MATCHED_INTENTS="$MATCHED_INTENTS"
+      echo "intent"
+      break
     fi
-  done
+  done)
   
   # If we have matches, categorize by enforcement level
   if [ -n "$MATCHED_KEYWORDS" ] || [ -n "$MATCHED_INTENTS" ]; then
