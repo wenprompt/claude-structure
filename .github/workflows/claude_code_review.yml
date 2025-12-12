@@ -136,4 +136,4 @@ jobs:
           # CLI arguments for the review
           # - max-turns limits token usage for cost control
           claude_args: |
-            --max-turns 15
+            --max-turns 50
