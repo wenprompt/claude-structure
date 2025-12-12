@@ -29,7 +29,7 @@ CONTEXT=$(echo "$PROMPT" | cut -c1-150 | tr '"' "'" | tr '\n' ' ' | sed 's/\\/\\
 
 # Initialize acontext.json if it doesn't exist
 mkdir -p "$PROJECT_DIR/.claude/docs"
-if [ ! -f "$ACONTEXT_FILE" ]; then
+if [ ! -s "$ACONTEXT_FILE" ]; then
   cat > "$ACONTEXT_FILE" << 'EOF'
 {
   "updated": "",
